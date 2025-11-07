@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   bot:
-    image: tg-qbt-bot:latest
+    image: ghcr.io/ivan-kuzmichev/tg-qbt-bot:latest
     container_name: tg-qbt-bot
     environment:
       - TELEGRAM_TOKEN=XXXXX:XXXXX
@@ -52,6 +52,6 @@ feat: новая фича v1.4.2
 То будет собранны версии: 
 
 ```
-ghcr.io/Ivan-Kuzmichev/tg-qbt-bot:v1.4.2
-ghcr.io/Ivan-Kuzmichev/tg-qbt-bot:latest
+ghcr.io/ivan-kuzmichev/tg-qbt-bot:v1.4.2
+ghcr.io/ivan-kuzmichev/tg-qbt-bot:latest
 ```

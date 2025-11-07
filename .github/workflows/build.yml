@@ -43,7 +43,7 @@ jobs:
 
       - name: Build image
         run: |
-          IMAGE="ghcr.io/${{ github.repository }}"
+          IMAGE="ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
           echo "Building image: $IMAGE"
 
           # Если нашли версию — тегируем двумя тегами
@@ -55,7 +55,7 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE="ghcr.io/${{ github.repository }}"
+          IMAGE="ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
           echo "Pushing image: $IMAGE"
 
           # Отправляем latest всегда
