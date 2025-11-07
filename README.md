@@ -40,3 +40,18 @@ services:
     network_mode: bridge
     restart: unless-stopped
 ```
+
+## Разработка
+
+Если в коммите есть версия, например:
+
+```
+feat: новая фича v1.4.2
+```
+
+То будет собранны версии: 
+
+```
+ghcr.io/Ivan-Kuzmichev/tg-qbt-bot:v1.4.2
+ghcr.io/Ivan-Kuzmichev/tg-qbt-bot:latest
+```

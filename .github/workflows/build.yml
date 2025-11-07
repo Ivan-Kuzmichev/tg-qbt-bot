@@ -1,0 +1,67 @@
+name: Build & Push Docker Image
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from commit message
+        id: version
+        run: |
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          # Ищем vX.Y.Z или X.Y.Z
+          if [[ "$COMMIT_MESSAGE" =~ ([v]{0,1}[0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            # Если без v в начале, добавим
+            if [[ ! "$VERSION" =~ ^v ]]; then
+              VERSION="v$VERSION"
+            fi
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+            echo "found=true" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+            echo "found=false" >> $GITHUB_ENV
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: |
+          IMAGE="ghcr.io/${{ github.repository }}"
+          echo "Building image: $IMAGE"
+
+          # Если нашли версию — тегируем двумя тегами
+          if [[ "$found" == "true" ]]; then
+            docker build -t $IMAGE:$VERSION -t $IMAGE:latest .
+          else
+            docker build -t $IMAGE:latest .
+          fi
+
+      - name: Push image
+        run: |
+          IMAGE="ghcr.io/${{ github.repository }}"
+          echo "Pushing image: $IMAGE"
+
+          # Отправляем latest всегда
+          docker push $IMAGE:latest
+
+          # Если есть версия — отправляем и её
+          if [[ "$found" == "true" ]]; then
+            docker push $IMAGE:$VERSION
+          fi
